@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
+# Cribb 🏠
 
-## Project info
+**Discover your next home through immersive short-form video tours.**
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Cribb is a modern real estate platform that revolutionizes the way you find apartments. Instead of static images, Cribb brings listings to life with a TikTok-style vertical video feed, making apartment hunting as engaging and effortless as scrolling through your favorite social media.
 
-## How can I edit this code?
+![Cribb Banner](https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3)
 
-There are several ways of editing your application.
+## ✨ Key Features
 
-**Use Lovable**
+- **🎬 Immersive Video Feed**: Swipe through high-quality video walkthroughs of premium apartment listings.
+- **⚡ Fast Search & Filters**: Quickly narrow down your search by city, price range, and property type (Studio, 1BR, 2BR+).
+- **🤝 Direct Broker Connection**: Instantly reach out to verified brokers via integrated contact forms.
+- **❤️ Social Interaction**: Like, save, and share listings with friends or roommates.
+- **📱 Mobile-First Experience**: Optimized for touch controls with smooth transitions and gestures.
+- **🔒 Secure Backend**: Powered by Firebase for real-time data and secure interactions.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🚀 Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: [React 18](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Shadcn UI](https://ui.shadcn.com/) + [Radix UI](https://www.radix-ui.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Backend**: [Firebase](https://firebase.google.com/) (Firestore)
+- **State Management**: [TanStack Query](https://tanstack.com/query/latest)
+- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
 
-**Use your preferred IDE**
+## 🛠️ Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js (v18 or higher)
+- pnpm (recommended) or npm/bun
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/apartment-reels-main.git
+   cd apartment-reels-main
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. **Set up Environment Variables**
+   Create a `.env` file in the root directory and add your Firebase configurations:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+4. **Run the development server**
+   ```bash
+   pnpm dev
+   ```
+
+5. **Build for production**
+   ```bash
+   pnpm build
+   ```
+
+## 📂 Project Structure
+
+```text
+src/
+├── assets/         # Images, logos, and static files
+├── components/     # Reusable UI components (shadcn/custom)
+├── data/           # Types and mock data
+├── hooks/          # Custom React hooks
+├── lib/            # External library configurations (Firebase, etc.)
+├── pages/          # Full page layouts
+├── services/       # Firebase and API service layers
+└── App.tsx         # Main application entry and routing
 ```
 
-**Edit a file directly in GitHub**
+## 🤝 Contributing
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-**Use GitHub Codespaces**
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📄 License
 
-## What technologies are used for this project?
+Distributed under the MIT License. See `LICENSE` for more information.
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Built with ❤️ by the Cribb Team.
