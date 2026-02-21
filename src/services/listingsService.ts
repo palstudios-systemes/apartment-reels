@@ -1,11 +1,11 @@
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
+  orderBy,
   limit,
   DocumentData,
   QueryConstraint
@@ -14,7 +14,7 @@ import { db } from '@/lib/firebase';
 import type { Listing, Broker } from '@/data/listings';
 
 // Collection references
-const listingsCollection = collection(db, 'listings');
+const listingsCollection = collection(db, 'AppartmentVideos');
 const brokersCollection = collection(db, 'brokers');
 
 // Transform Firestore document to Listing type
@@ -36,22 +36,32 @@ const transformListing = async (docData: DocumentData, id: string): Promise<List
     }
   }
 
+  // Fallback default broker to satisfy the Listing interface
+  const defaultBroker: Broker = {
+    id: 'default',
+    name: 'Platform Broker',
+    photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
+    verified: true,
+    rating: 5.0,
+    listings: 0
+  };
+
   return {
     id,
-    title: docData.title,
-    location: docData.location,
-    city: docData.city,
-    price: docData.price,
-    bedrooms: docData.bedrooms,
-    bathrooms: docData.bathrooms,
-    size: docData.size,
-    type: docData.type,
-    videoUrl: docData.videoUrl,
-    thumbnailUrl: docData.thumbnailUrl,
-    broker: broker || docData.broker,
+    title: docData.shortDescription || docData.Society || 'Apartment Video',
+    location: `${docData.Approx || ''} ${docData.Society || ''}`.trim() || 'Unknown Location',
+    city: docData.Approx || 'Unknown',
+    price: parseInt(docData.price) || 0,
+    bedrooms: 1, // Default value since it's not in the new schema
+    bathrooms: 1, // Default value since it's not in the new schema
+    size: 0, // Default value since it's not in the new schema
+    type: 'apartment', // Default to apartment
+    videoUrl: docData.video || '',
+    thumbnailUrl: '', // Default to empty string if no thumbnail
+    broker: broker || docData.broker || defaultBroker,
     likes: docData.likes || 0,
-    saved: docData.saved || false,
-    featured: docData.featured || false
+    saved: false, // Default since there is no `saved` field in schema
+    featured: false // Default since there is no `featured` field in schema
   };
 };
 
@@ -86,7 +96,7 @@ export const fetchFilteredListings = async (
       constraints.push(where('type', '==', type.toLowerCase()));
     }
 
-    const q = constraints.length > 0 
+    const q = constraints.length > 0
       ? query(listingsCollection, ...constraints)
       : query(listingsCollection);
 
@@ -144,7 +154,7 @@ export const fetchListingById = async (listingId: string): Promise<Listing | nul
   try {
     const docRef = doc(db, 'listings', listingId);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
       return transformListing(docSnap.data(), docSnap.id);
     }
