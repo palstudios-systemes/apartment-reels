@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, BadgeCheck, Phone, Mail, MessageSquare } from 'lucide-react';
+import { X, Send, BadgeCheck, Phone, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,14 +25,14 @@ const ContactModal = ({ listing, isOpen, onClose }: ContactModalProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSending(true);
-    
+
     // Simulate sending message
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    
+
     toast.success('Message sent successfully!', {
       description: `${listing.broker.name} will respond shortly.`,
     });
-    
+
     setIsSending(false);
     setName('');
     setEmail('');
@@ -152,31 +152,27 @@ const ContactModal = ({ listing, isOpen, onClose }: ContactModalProps) => {
               </div>
 
               {/* Quick Contact Options */}
-              <div className="flex items-center justify-center gap-4 pt-2">
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  Call
-                </button>
-                <span className="text-border">|</span>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  Email
-                </button>
-                <span className="text-border">|</span>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  WhatsApp
-                </button>
-              </div>
+              {listing.phone && (
+                <div className="flex items-center justify-center gap-4 pt-2">
+                  <a
+                    href={`tel:${listing.phone}`}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Phone className="w-4 h-4" />
+                    Call
+                  </a>
+                  <span className="text-border">|</span>
+                  <a
+                    href={`https://wa.me/${listing.phone.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 transition-colors font-medium"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    WhatsApp
+                  </a>
+                </div>
+              )}
             </form>
           </motion.div>
         </>

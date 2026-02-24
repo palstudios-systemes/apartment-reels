@@ -15,12 +15,11 @@ interface ListingDetailsProps {
 const ListingDetails = ({ listing, isOpen, onClose, onContact }: ListingDetailsProps) => {
   if (!listing) return null;
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+  const formatPrice = (price: number, currency?: string) => {
+    const formatted = new Intl.NumberFormat('en-US', {
       maximumFractionDigits: 0,
     }).format(price);
+    return currency ? `${currency} ${formatted}` : formatted;
   };
 
   const features = [
@@ -67,7 +66,7 @@ const ListingDetails = ({ listing, isOpen, onClose, onContact }: ListingDetailsP
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-              
+
               {/* Close Button */}
               <button
                 onClick={onClose}
@@ -92,7 +91,7 @@ const ListingDetails = ({ listing, isOpen, onClose, onContact }: ListingDetailsP
               {/* Price Overlay */}
               <div className="absolute bottom-4 left-4">
                 <p className="text-3xl font-bold text-primary-foreground">
-                  {formatPrice(listing.price)}<span className="text-base font-normal opacity-80">/mo</span>
+                  {formatPrice(listing.price, listing.currency)}<span className="text-base font-normal opacity-80">/mo</span>
                 </p>
               </div>
 
@@ -140,8 +139,8 @@ const ListingDetails = ({ listing, isOpen, onClose, onContact }: ListingDetailsP
                   About this {listing.type}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Experience luxury living in this stunning {listing.type} located in the heart of {listing.city}. 
-                  This meticulously designed space features modern finishes, abundant natural light, and 
+                  Experience luxury living in this stunning {listing.type} located in the heart of {listing.city}.
+                  This meticulously designed space features modern finishes, abundant natural light, and
                   breathtaking views. Perfect for professionals or couples seeking an elevated urban lifestyle.
                 </p>
               </div>

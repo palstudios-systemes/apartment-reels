@@ -13,6 +13,8 @@ export interface Listing {
   location: string;
   city: string;
   price: number;
+  currency?: string;
+  phone?: string;
   bedrooms: number;
   bathrooms: number;
   size: number;

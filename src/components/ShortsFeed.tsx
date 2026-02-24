@@ -30,7 +30,7 @@ const ShortsCard = ({ listing, isActive, onContact, onFollow }: Omit<ShortsCardP
   useEffect(() => {
     if (videoRef.current) {
       if (isActive) {
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => { });
       } else {
         videoRef.current.pause();
         videoRef.current.currentTime = 0;
@@ -70,15 +70,17 @@ const ShortsCard = ({ listing, isActive, onContact, onFollow }: Omit<ShortsCardP
 
   const handleContact = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onContact(listing);
+    if (listing.phone) {
+      const digits = listing.phone.replace(/\D/g, '');
+      window.open(`https://wa.me/${digits}`, '_blank');
+    }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+  const formatPrice = (price: number, currency?: string) => {
+    const formatted = new Intl.NumberFormat('en-US', {
       maximumFractionDigits: 0,
     }).format(price);
+    return currency ? `${currency} ${formatted}` : formatted;
   };
 
   const formatNumber = (num: number) => {
@@ -89,7 +91,7 @@ const ShortsCard = ({ listing, isActive, onContact, onFollow }: Omit<ShortsCardP
   };
 
   return (
-    <div 
+    <div
       className="relative w-full h-full bg-black"
     >
       {/* Video */}
@@ -188,7 +190,7 @@ const ShortsCard = ({ listing, isActive, onContact, onFollow }: Omit<ShortsCardP
         <div className="flex items-center gap-2 mb-3">
           <span className="text-white font-semibold">@{listing.broker.name.replace(/\s+/g, '')}</span>
           {listing.broker.verified && <BadgeCheck className="w-4 h-4 text-verified" />}
-          <button 
+          <button
             onClick={(e) => { e.stopPropagation(); onFollow(); }}
             className="ml-2 px-3 py-1 bg-white rounded-full text-black text-xs font-semibold"
           >
@@ -198,7 +200,7 @@ const ShortsCard = ({ listing, isActive, onContact, onFollow }: Omit<ShortsCardP
 
         {/* Price */}
         <p className="text-3xl font-bold text-white mb-2">
-          {formatPrice(listing.price)}<span className="text-base font-normal opacity-80">/mo</span>
+          {formatPrice(listing.price, listing.currency)}<span className="text-base font-normal opacity-80">/mo</span>
         </p>
 
         {/* Title and Location */}
@@ -226,7 +228,7 @@ const ShortsCard = ({ listing, isActive, onContact, onFollow }: Omit<ShortsCardP
       {/* Progress Bar */}
       {isActive && (
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30">
-          <motion.div 
+          <motion.div
             className="h-full bg-primary"
             initial={{ width: '0%' }}
             animate={{ width: '100%' }}
@@ -310,7 +312,7 @@ const ShortsFeed = ({ listings, onContact, onFilterClick, hasFilters }: ShortsFe
     const handleTouchEnd = (e: TouchEvent) => {
       touchEndY = e.changedTouches[0].clientY;
       const diff = touchStartY - touchEndY;
-      
+
       if (Math.abs(diff) > 50) {
         if (diff > 0) {
           goNext();
@@ -322,7 +324,7 @@ const ShortsFeed = ({ listings, onContact, onFilterClick, hasFilters }: ShortsFe
 
     container.addEventListener('touchstart', handleTouchStart);
     container.addEventListener('touchend', handleTouchEnd);
-    
+
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchend', handleTouchEnd);
@@ -344,7 +346,7 @@ const ShortsFeed = ({ listings, onContact, onFilterClick, hasFilters }: ShortsFe
   }, [goNext, goPrev]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="fixed inset-0 bg-black overflow-hidden flex items-center justify-center"
     >
@@ -368,135 +370,140 @@ const ShortsFeed = ({ listings, onContact, onFilterClick, hasFilters }: ShortsFe
           )}
         </button>
 
-      {/* Navigation Hints */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-4 z-20 flex flex-col items-center gap-1">
-        <button 
-          onClick={goPrev}
-          disabled={activeIndex === 0}
-          className={`p-2 rounded-full bg-white/10 backdrop-blur-sm transition-opacity ${activeIndex === 0 ? 'opacity-30' : 'opacity-70 hover:opacity-100'}`}
-        >
-          <ChevronUp className="w-5 h-5 text-white" />
-        </button>
-      </div>
-
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-4 z-20">
-        <button 
-          onClick={goNext}
-          disabled={activeIndex === listings.length - 1}
-          className={`p-2 rounded-full bg-white/10 backdrop-blur-sm transition-opacity ${activeIndex === listings.length - 1 ? 'opacity-30' : 'opacity-70 hover:opacity-100'}`}
-        >
-          <ChevronDown className="w-5 h-5 text-white" />
-        </button>
-      </div>
-
-      {/* Slide Counter */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-1">
-        {listings.map((_, index) => (
+        {/* Navigation Hints */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-4 z-20 flex flex-col items-center gap-1">
           <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-1 rounded-full transition-all ${
-              index === activeIndex 
-                ? 'h-6 bg-white' 
-                : 'h-2 bg-white/40 hover:bg-white/60'
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* Cards */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeIndex}
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -50, opacity: 0 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="w-full h-full"
-        >
-          <ShortsCard
-            listing={listings[activeIndex]}
-            isActive={true}
-            onContact={onContact}
-            onFollow={() => setShowDownloadModal(true)}
-          />
-        </motion.div>
-      </AnimatePresence>
-      </div>
-
-        {/* Download Modal - Positioned within the video container */}
-        {showDownloadModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md"
+            onClick={goPrev}
+            disabled={activeIndex === 0}
+            className={`p-2 rounded-full bg-white/10 backdrop-blur-sm transition-opacity ${activeIndex === 0 ? 'opacity-30' : 'opacity-70 hover:opacity-100'}`}
           >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-[calc(100%-2rem)] max-w-[320px] overflow-hidden rounded-3xl shadow-2xl"
-            >
-              {/* Gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white via-amber-50/50 to-primary/10" />
-              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent" />
-              
-              {/* Content */}
-              <div className="relative p-6">
-                <button
-                  onClick={() => setShowDownloadModal(false)}
-                  className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md group"
+            <ChevronUp className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-4 z-20">
+          <button
+            onClick={goNext}
+            disabled={activeIndex === listings.length - 1}
+            className={`p-2 rounded-full bg-white/10 backdrop-blur-sm transition-opacity ${activeIndex === listings.length - 1 ? 'opacity-30' : 'opacity-70 hover:opacity-100'}`}
+          >
+            <ChevronDown className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        {/* Slide Counter */}
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-1">
+          {listings.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-1 rounded-full transition-all ${index === activeIndex
+                ? 'h-6 bg-white'
+                : 'h-2 bg-white/40 hover:bg-white/60'
+                }`}
+            />
+          ))}
+        </div>
+
+        {/* Cards */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIndex}
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="w-full h-full"
+          >
+            <ShortsCard
+              listing={listings[activeIndex]}
+              isActive={true}
+              onContact={onContact}
+              onFollow={() => setShowDownloadModal(true)}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Download Modal - Positioned within the video container */}
+      {showDownloadModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative w-[calc(100%-2rem)] max-w-[320px] overflow-hidden rounded-3xl shadow-2xl"
+          >
+            {/* Gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-amber-50/50 to-primary/10" />
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent" />
+
+            {/* Content */}
+            <div className="relative p-6">
+              <button
+                onClick={() => setShowDownloadModal(false)}
+                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md group"
+              >
+                <X className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+              </button>
+
+              <div className="text-center pt-2">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
+                  Download the App
+                </h2>
+              </div>
+
+              <div className="flex flex-col items-center gap-4 py-6">
+                {/* Animated icon with gradient ring */}
+                <motion.div
+                  animate={{
+                    boxShadow: ["0 0 0 0 rgba(200, 153, 13, 0.3)", "0 0 0 12px rgba(200, 153, 13, 0)", "0 0 0 0 rgba(200, 153, 13, 0)"]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="relative w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 via-primary/10 to-amber-100 flex items-center justify-center"
                 >
-                  <X className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                </button>
-                
-                <div className="text-center pt-2">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
-                    Download the App
-                  </h2>
-                </div>
-                
-                <div className="flex flex-col items-center gap-4 py-6">
-                  {/* Animated icon with gradient ring */}
-                  <motion.div 
-                    animate={{ 
-                      boxShadow: ["0 0 0 0 rgba(200, 153, 13, 0.3)", "0 0 0 12px rgba(200, 153, 13, 0)", "0 0 0 0 rgba(200, 153, 13, 0)"]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="relative w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 via-primary/10 to-amber-100 flex items-center justify-center"
+                  <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white to-amber-50" />
+                  <Download className="relative w-7 h-7 text-primary" />
+                </motion.div>
+
+                <p className="text-center text-sm text-muted-foreground max-w-[200px]">
+                  Get the full experience with our mobile app
+                </p>
+
+                {/* Gradient buttons */}
+                <div className="flex gap-3 mt-2 w-full">
+                  <motion.a
+                    href="https://apps.apple.com/in/app/cribb/id6744996246"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-xl font-semibold hover:from-gray-800 hover:to-gray-700 transition-all duration-200 text-sm shadow-lg shadow-gray-900/25 text-center"
                   >
-                    <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white to-amber-50" />
-                    <Download className="relative w-7 h-7 text-primary" />
-                  </motion.div>
-                  
-                  <p className="text-center text-sm text-muted-foreground max-w-[200px]">
-                    Get the full experience with our mobile app
-                  </p>
-                  
-                  {/* Gradient buttons */}
-                  <div className="flex gap-3 mt-2 w-full">
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-xl font-semibold hover:from-gray-800 hover:to-gray-700 transition-all duration-200 text-sm shadow-lg shadow-gray-900/25"
-                    >
-                      App Store
-                    </motion.button>
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-amber-500 text-white rounded-xl font-semibold hover:from-primary/90 hover:to-amber-400 transition-all duration-200 text-sm shadow-lg shadow-primary/25"
-                    >
-                      Play Store
-                    </motion.button>
-                  </div>
+                    App Store
+                  </motion.a>
+                  <motion.a
+                    href="https://play.google.com/store/apps/details?id=com.rhe.cribb&pcampaignid=web_share"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-amber-500 text-white rounded-xl font-semibold hover:from-primary/90 hover:to-amber-400 transition-all duration-200 text-sm shadow-lg shadow-primary/25 text-center"
+                  >
+                    Play Store
+                  </motion.a>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
-        )}
+        </motion.div>
+      )}
     </div>
   );
 };

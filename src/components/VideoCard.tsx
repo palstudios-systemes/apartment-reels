@@ -73,12 +73,11 @@ const VideoCard = ({ listing, onContact, onViewDetails }: VideoCardProps) => {
     }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+  const formatPrice = (price: number, currency?: string) => {
+    const formatted = new Intl.NumberFormat('en-US', {
       maximumFractionDigits: 0,
     }).format(price);
+    return currency ? `${currency} ${formatted}` : formatted;
   };
 
   return (
@@ -90,7 +89,7 @@ const VideoCard = ({ listing, onContact, onViewDetails }: VideoCardProps) => {
       className="relative bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 group"
     >
       {/* Video Container */}
-      <div 
+      <div
         className="relative aspect-[9/12] sm:aspect-[9/10] cursor-pointer overflow-hidden"
         onClick={() => onViewDetails(listing)}
       >
@@ -103,10 +102,10 @@ const VideoCard = ({ listing, onContact, onViewDetails }: VideoCardProps) => {
           playsInline
           className="w-full h-full object-cover"
         />
-        
+
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
-        
+
         {/* Play/Pause Button */}
         <button
           onClick={(e) => {
@@ -129,14 +128,14 @@ const VideoCard = ({ listing, onContact, onViewDetails }: VideoCardProps) => {
         <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
           {/* Price */}
           <p className="text-2xl sm:text-3xl font-bold text-primary-foreground mb-1">
-            {formatPrice(listing.price)}<span className="text-sm font-normal opacity-80">/mo</span>
+            {formatPrice(listing.price, listing.currency)}<span className="text-sm font-normal opacity-80">/mo</span>
           </p>
-          
+
           {/* Title */}
           <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground mb-1 line-clamp-1">
             {listing.title}
           </h3>
-          
+
           {/* Location */}
           <p className="text-sm text-primary-foreground/80 mb-3 line-clamp-1">
             {listing.location}

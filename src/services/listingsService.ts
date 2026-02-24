@@ -52,6 +52,8 @@ const transformListing = async (docData: DocumentData, id: string): Promise<List
     location: `${docData.Approx || ''} ${docData.Society || ''}`.trim() || 'Unknown Location',
     city: docData.Approx || 'Unknown',
     price: parseInt(docData.price) || 0,
+    currency: docData.currency || '',
+    phone: docData.contact || '',
     bedrooms: 1, // Default value since it's not in the new schema
     bathrooms: 1, // Default value since it's not in the new schema
     size: 0, // Default value since it's not in the new schema
